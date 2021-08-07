@@ -1,13 +1,16 @@
+import { Transferencia } from './models/transferencia.model';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class TransferenciaService {
+	private listaTransferencias: Transferencia[];
+  private url = 'http://localhost:3000/transferencias';
 
-	listaTransferencias: any[];
-
-	constructor() {
+	constructor(private httpClient: HttpClient) {
 		this.listaTransferencias = [];
 	}
 
@@ -15,12 +18,16 @@ export class TransferenciaService {
 		return this.listaTransferencias;
 	}
 
-	adicionar(transferencia: any) {
+  todas(): Observable<Transferencia[]> {
+    return this.httpClient.get<Transferencia[]>(this.url);
+  }
+
+	adicionar(transferencia: Transferencia): Observable<Transferencia> {
 		this.hidratar(transferencia);
-		this.listaTransferencias.push(transferencia);
+		return this.httpClient.post<Transferencia>(this.url, transferencia);
 	}
 
-	private hidratar(transferencia: any) {
+	private hidratar(transferencia: Transferencia) {
 		transferencia.data = new Date();
 	}
 }
